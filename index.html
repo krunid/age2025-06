@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณอายุ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600&family=Noto+Sans+Khmer:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Sarabun', 'Noto Sans Myanmar', 'Noto Sans Khmer', sans-serif;
+            background-image: url('https://template.canva.com/EAF3yiH6Fx0/1/0/400w-JZOp5OGEI0I.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #10b981;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+        .result-card {
+            background-color: #f8fafc;
+            border-left: 4px solid #4f46e5;
+        }
+        footer {
+            background-color: rgba(15, 23, 42, 0.8);
+        }
+        .fb-icon:hover {
+            color: #1877f2;
+        }
+        .lang-th, .lang-lo, .lang-en, .lang-my, .lang-km {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .lang-my {
+            font-family: 'Noto Sans Myanmar', sans-serif;
+        }
+        .lang-km {
+            font-family: 'Noto Sans Khmer', sans-serif;
+        }
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+        }
+        .dropdown-content a:hover {
+            background-color: #ede9fe;
+        }
+        .show {
+            display: block;
+        }
+        .dropdown-btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 10px 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .dropdown-btn:hover {
+            background-color: #4338ca;
+        }
+        .flag-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <div class="flex-grow flex items-center justify-center p-4 md:p-6">
+        <div class="container w-full max-w-3xl p-6 md:p-8">
+            <div class="flex justify-end mb-6">
+                <div class="language-dropdown">
+                    <button id="language-dropdown-btn" class="dropdown-btn">
+                        <span id="current-language">ไทย</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="language-dropdown" class="dropdown-content">
+                        <a href="#" data-lang="th">
+                            <span class="flag-icon">🇹🇭</span>ไทย
+                        </a>
+                        <a href="#" data-lang="lo">
+                            <span class="flag-icon">🇱🇦</span>ລາວ
+                        </a>
+                        <a href="#" data-lang="my">
+                            <span class="flag-icon">🇲🇲</span>မြန်မာ
+                        </a>
+                        <a href="#" data-lang="km">
+                            <span class="flag-icon">🇰🇭</span>ខ្មែរ
+                        </a>
+                        <a href="#" data-lang="en">
+                            <span class="flag-icon">🇬🇧</span>English
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-center mb-8 text-indigo-700" id="title">โปรแกรมคำนวณอายุ</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block mb-2 font-medium" id="day-label">วัน</label>
+                    <select id="day" class="w-full p-3 border rounded-md focus:ring focus:ring-indigo-300 focus:outline-none">
+                        <!-- Days will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-2 font-medium" id="month-label">เดือน</label>
+                    <select id="month" class="w-full p-3 border rounded-md focus:ring focus:ring-indigo-300 focus:outline-none">
+                        <!-- Months will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-2 font-medium" id="year-label">ปี</label>
+                    <select id="year" class="w-full p-3 border rounded-md focus:ring focus:ring-indigo-300 focus:outline-none">
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 mb-8">
+                <button id="calculate-current" class="btn-primary px-6 py-3 rounded-md font-medium flex-grow">
+                    <span id="calc-current-text">คำนวณ ณ ปัจจุบัน</span>
+                </button>
+                <button id="calculate-specific" class="btn-secondary px-6 py-3 rounded-md font-medium flex-grow">
+                    <span id="calc-specific-text">คำนวณ ณ 16 พฤษภาคม 2568</span>
+                </button>
+            </div>
+            
+            <div id="result" class="result-card p-6 rounded-lg mb-6 hidden">
+                <div class="mb-4">
+                    <span class="font-medium" id="birthdate-label">วันเกิดของคุณ:</span>
+                    <span id="birthdate-text" class="ml-2"></span>
+                </div>
+                <div class="mb-4">
+                    <span class="font-medium" id="calculation-date-label">คำนวณ ณ วันที่:</span>
+                    <span id="calculation-date-text" class="ml-2"></span>
+                </div>
+                <div class="mb-4">
+                    <span class="font-medium" id="age-label">อายุปัจจุบันของคุณ คือ:</span>
+                    <span id="age-text" class="ml-2"></span>
+                </div>
+                <div>
+                    <span class="font-medium" id="total-time-label">คุณเกิดมาแล้วเป็นเวลา:</span>
+                    <span id="total-time-text" class="ml-2"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="text-white p-4 text-center">
+        <div class="flex items-center justify-center gap-2">
+            <span id="footer-text">พัฒนาโดย ครูนิด ศิษย์หลวงพ่อเสือ :: โรงเรียนสำนักตักศิลา</span>
+            <a href="https://www.facebook.com/KrunidE23VKF" target="_blank" class="fb-icon text-white hover:text-blue-400 transition-colors">
+                <i class="fab fa-facebook-square text-xl"></i>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Language data
+        const languages = {
+            th: {
+                title: "โปรแกรมคำนวณอายุ",
+                dayLabel: "วัน",
+                monthLabel: "เดือน",
+                yearLabel: "ปี",
+                calcCurrent: "คำนวณ ณ ปัจจุบัน",
+                calcSpecific: "คำนวณ ณ 16 พฤษภาคม 2568",
+                birthdateLabel: "วันเกิดของคุณ:",
+                calculationDateLabel: "คำนวณ ณ วันที่:",
+                ageLabel: "อายุปัจจุบันของคุณ คือ:",
+                totalTimeLabel: "คุณเกิดมาแล้วเป็นเวลา:",
+                footer: "พัฒนาโดย ครูนิด ศิษย์หลวงพ่อเสือ :: โรงเรียนสำนักตักศิลา",
+                displayName: "ไทย",
+                months: [
+                    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+                ],
+                days: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"],
+                yearOffset: 543, // Thai Buddhist Era offset
+                yearText: "ปี",
+                monthText: "เดือน",
+                dayText: "วัน",
+                hourText: "ชั่วโมง",
+                minuteText: "นาที",
+                secondText: "วินาที",
+                dayPrefix: "วัน",
+                dayOf: "ที่",
+                monthPrefix: "เดือน",
+                yearPrefix: "พ.ศ."
+            },
+            lo: {
+                title: "ໂປຣແກຣມຄຳນວນອາຍຸ",
+                dayLabel: "ວັນ",
+                monthLabel: "ເດືອນ",
+                yearLabel: "ປີ",
+                calcCurrent: "ຄຳນວນ ປັດຈຸບັນ",
+                calcSpecific: "ຄຳນວນ 16 ພຶດສະພາ 2568",
+                birthdateLabel: "ວັນເກີດຂອງທ່ານ:",
+                calculationDateLabel: "ຄຳນວນ ວັນທີ:",
+                ageLabel: "ອາຍຸປັດຈຸບັນຂອງທ່ານ ຄື:",
+                totalTimeLabel: "ທ່ານເກີດມາແລ້ວເປັນເວລາ:",
+                footer: "ພັດທະນາໂດຍ ຄູນິດ ສິດຫຼວງພໍ່ເສືອ :: ໂຮງຮຽນສຳນັກຕັກສິລາ",
+                displayName: "ລາວ",
+                months: [
+                    "ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ",
+                    "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"
+                ],
+                days: ["ອາທິດ", "ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ"],
+                yearOffset: 543, // Buddhist Era offset
+                yearText: "ປີ",
+                monthText: "ເດືອນ",
+                dayText: "ວັນ",
+                hourText: "ຊົ່ວໂມງ",
+                minuteText: "ນາທີ",
+                secondText: "ວິນາທີ",
+                dayPrefix: "ວັນ",
+                dayOf: "ທີ່",
+                monthPrefix: "ເດືອນ",
+                yearPrefix: "ພ.ສ."
+            },
+            my: {
+                title: "အသက်တွက်ချက်မှုပရိုဂရမ်",
+                dayLabel: "နေ့",
+                monthLabel: "လ",
+                yearLabel: "နှစ်",
+                calcCurrent: "ယနေ့အတွက် တွက်ချက်ပါ",
+                calcSpecific: "မေ ၁၆၊ ၂၀၂၅ အတွက် တွက်ချက်ပါ",
+                birthdateLabel: "သင့်မွေးနေ့:",
+                calculationDateLabel: "တွက်ချက်သည့်နေ့:",
+                ageLabel: "သင့်လက်ရှိအသက်:",
+                totalTimeLabel: "သင်အသက်ရှင်နေသည်မှာ:",
+                footer: "ဆရာနစ်၊ လူကြီးဆရာတော်ကျား၏တပည့် :: ဆမ်နက်တက်ဆီလာကျောင်းမှ ဖန်တီးသည်",
+                displayName: "မြန်မာ",
+                months: [
+                    "ဇန်နဝါရီ", "ဖေဖော်ဝါရီ", "မတ်", "ဧပြီ", "မေ", "ဇွန်",
+                    "ဇူလိုင်", "သြဂုတ်", "စက်တင်ဘာ", "အောက်တိုဘာ", "နိုဝင်ဘာ", "ဒီဇင်ဘာ"
+                ],
+                days: ["တနင်္ဂနွေ", "တနင်္လာ", "အင်္ဂါ", "ဗုဒ္ဓဟူး", "ကြာသပတေး", "သောကြာ", "စနေ"],
+                yearOffset: 0, // Gregorian calendar
+                yearText: "နှစ်",
+                monthText: "လ",
+                dayText: "ရက်",
+                hourText: "နာရီ",
+                minuteText: "မိနစ်",
+                secondText: "စက္ကန့်",
+                dayPrefix: "",
+                dayOf: "",
+                monthPrefix: "",
+                yearPrefix: ""
+            },
+            km: {
+                title: "កម្មវិធីគណនាអាយុ",
+                dayLabel: "ថ្ងៃ",
+                monthLabel: "ខែ",
+                yearLabel: "ឆ្នាំ",
+                calcCurrent: "គណនាតាមថ្ងៃបច្ចុប្បន្ន",
+                calcSpecific: "គណនាតាមថ្ងៃទី១៦ ខែឧសភា ឆ្នាំ២០២៥",
+                birthdateLabel: "ថ្ងៃកំណើតរបស់អ្នក៖",
+                calculationDateLabel: "គណនាតាមថ្ងៃទី៖",
+                ageLabel: "អាយុបច្ចុប្បន្នរបស់អ្នកគឺ៖",
+                totalTimeLabel: "អ្នកបានកើតមកជាពេល៖",
+                footer: "អភិវឌ្ឍដោយ គ្រូនីដ សិស្សលោកគ្រូខ្លា :: សាលាសាំណាក់តាក់សីលា",
+                displayName: "ខ្មែរ",
+                months: [
+                    "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា",
+                    "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"
+                ],
+                days: ["អាទិត្យ", "ចន្ទ", "អង្គារ", "ពុធ", "ព្រហស្បតិ៍", "សុក្រ", "សៅរ៍"],
+                yearOffset: 0, // Gregorian calendar
+                yearText: "ឆ្នាំ",
+                monthText: "ខែ",
+                dayText: "ថ្ងៃ",
+                hourText: "ម៉ោង",
+                minuteText: "នាទី",
+                secondText: "វិនាទី",
+                dayPrefix: "ថ្ងៃ",
+                dayOf: "ទី",
+                monthPrefix: "ខែ",
+                yearPrefix: "ឆ្នាំ"
+            },
+            en: {
+                title: "Age Calculator",
+                dayLabel: "Day",
+                monthLabel: "Month",
+                yearLabel: "Year",
+                calcCurrent: "Calculate as of Today",
+                calcSpecific: "Calculate as of May 16, 2025",
+                birthdateLabel: "Your birthdate:",
+                calculationDateLabel: "Calculated as of:",
+                ageLabel: "Your current age is:",
+                totalTimeLabel: "You have been alive for:",
+                footer: "Developed by Kru Nid, Student of Luang Por Sua :: Samnak Taksila School",
+                displayName: "English",
+                months: [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ],
+                days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                yearOffset: 0, // No offset for Gregorian calendar
+                yearText: "years",
+                monthText: "months",
+                dayText: "days",
+                hourText: "hours",
+                minuteText: "minutes",
+                secondText: "seconds",
+                dayPrefix: "",
+                dayOf: "",
+                monthPrefix: "",
+                yearPrefix: ""
+            }
+        };
+
+        let currentLanguage = 'th';
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateSelects();
+            setupEventListeners();
+            updateLanguage('th');
+        });
+
+        function populateSelects() {
+            const daySelect = document.getElementById('day');
+            const monthSelect = document.getElementById('month');
+            const yearSelect = document.getElementById('year');
+            
+            // Populate days
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+            
+            // Populate months (will be updated with language)
+            for (let i = 0; i < 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = languages[currentLanguage].months[i];
+                monthSelect.appendChild(option);
+            }
+            
+            // Populate years (100 years back from current year)
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 100; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + languages[currentLanguage].yearOffset;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('calculate-current').addEventListener('click', () => calculateAge('current'));
+            document.getElementById('calculate-specific').addEventListener('click', () => calculateAge('specific'));
+            
+            // Language dropdown
+            document.getElementById('language-dropdown-btn').addEventListener('click', function() {
+                document.getElementById('language-dropdown').classList.toggle('show');
+            });
+            
+            // Close the dropdown when clicking outside
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('#language-dropdown-btn') && 
+                    !event.target.matches('#language-dropdown-btn *')) {
+                    const dropdown = document.getElementById('language-dropdown');
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            });
+            
+            // Language selection
+            document.querySelectorAll('#language-dropdown a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    updateLanguage(lang);
+                    document.getElementById('language-dropdown').classList.remove('show');
+                });
+            });
+        }
+
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update dropdown button text
+            document.getElementById('current-language').textContent = languages[lang].displayName;
+            
+            // Update UI text
+            document.getElementById('title').textContent = languages[lang].title;
+            document.getElementById('day-label').textContent = languages[lang].dayLabel;
+            document.getElementById('month-label').textContent = languages[lang].monthLabel;
+            document.getElementById('year-label').textContent = languages[lang].yearLabel;
+            document.getElementById('calc-current-text').textContent = languages[lang].calcCurrent;
+            document.getElementById('calc-specific-text').textContent = languages[lang].calcSpecific;
+            document.getElementById('birthdate-label').textContent = languages[lang].birthdateLabel;
+            document.getElementById('calculation-date-label').textContent = languages[lang].calculationDateLabel;
+            document.getElementById('age-label').textContent = languages[lang].ageLabel;
+            document.getElementById('total-time-label').textContent = languages[lang].totalTimeLabel;
+            document.getElementById('footer-text').textContent = languages[lang].footer;
+            
+            // Update month names in dropdown
+            const monthSelect = document.getElementById('month');
+            const selectedMonth = monthSelect.value;
+            monthSelect.innerHTML = '';
+            
+            for (let i = 0; i < 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = languages[lang].months[i];
+                monthSelect.appendChild(option);
+            }
+            monthSelect.value = selectedMonth;
+            
+            // Update year display in dropdown
+            const yearSelect = document.getElementById('year');
+            const selectedYear = parseInt(yearSelect.value);
+            yearSelect.innerHTML = '';
+            
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 100; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + languages[lang].yearOffset;
+                yearSelect.appendChild(option);
+            }
+            yearSelect.value = selectedYear;
+            
+            // If there's a result showing, recalculate it with the new language
+            if (!document.getElementById('result').classList.contains('hidden')) {
+                const mode = document.getElementById('calculation-date-text').textContent.includes('2568') || 
+                             document.getElementById('calculation-date-text').textContent.includes('2025') ? 
+                             'specific' : 'current';
+                calculateAge(mode);
+            }
+            
+            // Add language-specific class to body
+            document.body.className = document.body.className.replace(/lang-\w+/g, '');
+            document.body.classList.add(`lang-${lang}`);
+        }
+
+        function calculateAge(mode) {
+            const day = parseInt(document.getElementById('day').value);
+            const month = parseInt(document.getElementById('month').value);
+            const year = parseInt(document.getElementById('year').value);
+            
+            // Create birthdate
+            const birthDate = new Date(year, month, day);
+            
+            // Create calculation date (either current or specific)
+            let calculationDate;
+            if (mode === 'current') {
+                calculationDate = new Date();
+            } else {
+                // May 16, 2025 (2568 in Thai calendar)
+                calculationDate = new Date(2025, 4, 16);
+            }
+            
+            // Calculate age
+            let ageYears = calculationDate.getFullYear() - birthDate.getFullYear();
+            let ageMonths = calculationDate.getMonth() - birthDate.getMonth();
+            let ageDays = calculationDate.getDate() - birthDate.getDate();
+            
+            // Adjust for negative months or days
+            if (ageDays < 0) {
+                ageMonths--;
+                // Get days in the previous month
+                const prevMonth = new Date(calculationDate.getFullYear(), calculationDate.getMonth(), 0);
+                ageDays += prevMonth.getDate();
+            }
+            
+            if (ageMonths < 0) {
+                ageYears--;
+                ageMonths += 12;
+            }
+            
+            // Calculate total time in seconds
+            const diffTime = Math.abs(calculationDate - birthDate);
+            const totalSeconds = Math.floor(diffTime / 1000);
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const totalHours = Math.floor(totalMinutes / 60);
+            
+            // Format the dates according to language
+            const birthDateFormatted = formatDate(birthDate, currentLanguage);
+            const calculationDateFormatted = formatDate(calculationDate, currentLanguage);
+            
+            // Format the age text
+            const ageText = `${ageYears} ${languages[currentLanguage].yearText} ${ageMonths} ${languages[currentLanguage].monthText} ${ageDays} ${languages[currentLanguage].dayText}`;
+            
+            // Format the total time text
+            const totalTimeText = `${totalHours} ${languages[currentLanguage].hourText} ${totalMinutes % 60} ${languages[currentLanguage].minuteText} ${totalSeconds % 60} ${languages[currentLanguage].secondText}`;
+            
+            // Update the result
+            document.getElementById('birthdate-text').textContent = birthDateFormatted;
+            document.getElementById('calculation-date-text').textContent = calculationDateFormatted;
+            document.getElementById('age-text').textContent = ageText;
+            document.getElementById('total-time-text').textContent = totalTimeText;
+            
+            // Show the result
+            document.getElementById('result').classList.remove('hidden');
+        }
+
+        function formatDate(date, lang) {
+            const day = date.getDate();
+            const month = date.getMonth();
+            const year = date.getFullYear();
+            const dayOfWeek = date.getDay();
+            
+            const langData = languages[lang];
+            
+            if (lang === 'en') {
+                return `${langData.days[dayOfWeek]}, ${langData.months[month]} ${day}, ${year}`;
+            } else if (lang === 'my') {
+                // Myanmar format
+                return `${langData.days[dayOfWeek]}နေ့၊ ${langData.months[month]} ${day}၊ ${year} ${langData.yearPrefix}`;
+            } else if (lang === 'km') {
+                // Khmer format
+                return `${langData.dayPrefix}${langData.days[dayOfWeek]} ${langData.dayOf}${day} ${langData.monthPrefix}${langData.months[month]} ${langData.yearPrefix}${year}`;
+            } else {
+                // Thai and Lao format
+                return `${langData.dayPrefix}${langData.days[dayOfWeek]}${langData.dayOf} ${day} ${langData.monthPrefix}${langData.months[month]} ${langData.yearPrefix} ${year + langData.yearOffset}`;
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93f3070436604ba6',t:'MTc0NzE0ODQ0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
